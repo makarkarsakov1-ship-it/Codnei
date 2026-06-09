@@ -2,14 +2,16 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>AI Chat Hub</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-<!-- ══════════════════ DRAWER (burger menu) ══════════════════ -->
+<!-- ══ DRAWER overlay + panel ══ -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-top">
@@ -26,143 +28,143 @@
   <div id="chat-history-list"></div>
 
   <div class="drawer-bottom">
-    <button class="drawer-settings-btn" onclick="openSettings()">
-      ⚙ Настройки
-    </button>
+    <button class="drawer-settings-btn" onclick="openSettings()">⚙ Настройки API</button>
   </div>
 </aside>
 
-<!-- ══════════════════ SETTINGS MODAL ══════════════════ -->
+<!-- ══ SETTINGS MODAL (bottom sheet) ══ -->
 <div class="modal-overlay" id="settings-overlay" onclick="closeSettings()"></div>
 <div class="modal" id="settings-modal">
+  <div class="modal-handle"></div>
   <div class="modal-header">
-    <h2>Настройки</h2>
+    <h2>⚙ Настройки API</h2>
     <button class="icon-btn" onclick="closeSettings()">✕</button>
   </div>
 
   <div class="modal-tabs">
-    <button class="mtab active" id="mtab-gpt" onclick="switchMTab('gpt')">ChatGPT</button>
-    <button class="mtab" id="mtab-claude" onclick="switchMTab('claude')">Claude</button>
+    <button class="mtab active" id="mtab-gpt"    onclick="switchMTab('gpt')">🤖 ChatGPT</button>
+    <button class="mtab"        id="mtab-claude" onclick="switchMTab('claude')">⬡ Claude</button>
   </div>
 
-  <!-- GPT PANEL -->
+  <!-- ── GPT PANEL ── -->
   <div class="mpanel active" id="mpanel-gpt">
     <div class="mpanel-card gpt-card">
       <div class="mpanel-icon">🤖</div>
       <div>
         <div class="mpanel-title">OpenAI / ChatGPT</div>
-        <a href="https://platform.openai.com/api-keys" target="_blank" class="mpanel-link">platform.openai.com →</a>
+        <a href="https://platform.openai.com/api-keys" target="_blank" class="mpanel-link">Получить ключ →</a>
       </div>
     </div>
 
-    <div class="field-label">Модель</div>
-    <select id="gpt-model">
-      <option value="chatgpt-4o-latest">ChatGPT-4o latest</option>
-      <option value="gpt-4.5-preview">GPT-4.5 preview</option>
-      <option value="gpt-4o">GPT-4o</option>
-      <option value="gpt-4o-mini">GPT-4o mini</option>
-      <option value="gpt-4-turbo">GPT-4 Turbo</option>
-      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-      <option value="o1">o1</option>
-      <option value="o1-mini">o1-mini</option>
-      <option value="o3">o3</option>
-      <option value="o3-mini">o3-mini</option>
-      <option value="o4-mini">o4-mini</option>
-    </select>
-
-    <div class="field-label">
-      API Ключи
-      <span class="hint">(один ключ на строку — будут перебираться по очереди)</span>
+    <div>
+      <div class="field-label">Модель</div>
+      <select id="gpt-model">
+        <option value="chatgpt-4o-latest">ChatGPT-4o latest</option>
+        <option value="gpt-4.5-preview">GPT-4.5 preview</option>
+        <option value="gpt-4o">GPT-4o</option>
+        <option value="gpt-4o-mini">GPT-4o mini</option>
+        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+        <option value="o1">o1</option>
+        <option value="o1-mini">o1-mini</option>
+        <option value="o3">o3</option>
+        <option value="o3-mini">o3-mini</option>
+        <option value="o4-mini">o4-mini</option>
+      </select>
     </div>
-    <textarea id="gpt-keys" rows="6" placeholder="sk-...&#10;sk-...&#10;sk-..."></textarea>
 
-    <div class="field-label">Системный промпт</div>
-    <textarea id="gpt-system" rows="3" placeholder="Ты полезный ИИ-помощник..."></textarea>
+    <div>
+      <div class="field-label">
+        API Ключи
+        <span class="hint">Один ключ на строку. Если один не работает — берётся следующий.</span>
+      </div>
+      <textarea id="gpt-keys" rows="5" placeholder="sk-...&#10;sk-...&#10;sk-..."></textarea>
+    </div>
 
-    <div class="btn-row">
-      <button class="save-btn" onclick="saveSettings('gpt')">Сохранить</button>
+    <div>
+      <div class="field-label">Системный промпт <span class="hint">Необязательно</span></div>
+      <textarea id="gpt-system" rows="2" placeholder="Ты полезный ИИ-помощник..."></textarea>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <button class="save-btn" onclick="saveSettings('gpt')">💾 Сохранить</button>
       <button class="clear-btn" onclick="clearKeys('gpt')">Очистить ключи</button>
+      <span class="save-msg" id="save-msg-gpt"></span>
     </div>
-    <div class="save-msg" id="save-msg-gpt"></div>
   </div>
 
-  <!-- CLAUDE PANEL -->
+  <!-- ── CLAUDE PANEL ── -->
   <div class="mpanel" id="mpanel-claude">
     <div class="mpanel-card claude-card">
       <div class="mpanel-icon">⬡</div>
       <div>
         <div class="mpanel-title">Anthropic / Claude</div>
-        <a href="https://console.anthropic.com/api-keys" target="_blank" class="mpanel-link">console.anthropic.com →</a>
+        <a href="https://console.anthropic.com/api-keys" target="_blank" class="mpanel-link">Получить ключ →</a>
       </div>
     </div>
 
-    <div class="field-label">Модель</div>
-    <select id="claude-model">
-      <option value="claude-opus-4-7">Claude Opus 4.7 ★</option>
-      <option value="claude-opus-4-6">Claude Opus 4.6</option>
-      <option value="claude-opus-4-5">Claude Opus 4.5</option>
-      <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
-      <option value="claude-sonnet-4-5">Claude Sonnet 4.5</option>
-      <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
-    </select>
-
-    <div class="field-label">
-      API Ключи
-      <span class="hint">(один ключ на строку — будут перебираться по очереди)</span>
+    <div>
+      <div class="field-label">Модель</div>
+      <select id="claude-model">
+        <option value="claude-opus-4-7">Claude Opus 4.7 ★</option>
+        <option value="claude-opus-4-6">Claude Opus 4.6</option>
+        <option value="claude-opus-4-5">Claude Opus 4.5</option>
+        <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
+        <option value="claude-sonnet-4-5">Claude Sonnet 4.5</option>
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+      </select>
     </div>
-    <textarea id="claude-keys" rows="6" placeholder="sk-ant-...&#10;sk-ant-...&#10;sk-ant-..."></textarea>
 
-    <div class="field-label">Системный промпт</div>
-    <textarea id="claude-system" rows="3" placeholder="Ты полезный ИИ-помощник..."></textarea>
+    <div>
+      <div class="field-label">
+        API Ключи
+        <span class="hint">Один ключ на строку. Если один не работает — берётся следующий.</span>
+      </div>
+      <textarea id="claude-keys" rows="5" placeholder="sk-ant-...&#10;sk-ant-...&#10;sk-ant-..."></textarea>
+    </div>
 
-    <div class="btn-row">
-      <button class="save-btn" onclick="saveSettings('claude')">Сохранить</button>
+    <div>
+      <div class="field-label">Системный промпт <span class="hint">Необязательно</span></div>
+      <textarea id="claude-system" rows="2" placeholder="Ты полезный ИИ-помощник..."></textarea>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <button class="save-btn" onclick="saveSettings('claude')">💾 Сохранить</button>
       <button class="clear-btn" onclick="clearKeys('claude')">Очистить ключи</button>
+      <span class="save-msg" id="save-msg-claude"></span>
     </div>
-    <div class="save-msg" id="save-msg-claude"></div>
   </div>
 </div>
 
-<!-- ══════════════════ MAIN CHAT ══════════════════ -->
-<div class="chat-wrap" id="chat-wrap">
-
-  <!-- TOP BAR -->
+<!-- ══ MAIN CHAT ══ -->
+<div class="chat-wrap">
   <header class="topbar">
     <button class="icon-btn burger" onclick="openDrawer()">
       <span></span><span></span><span></span>
     </button>
     <div class="topbar-center">
       <div class="model-switcher">
-        <button class="msw active" id="msw-gpt" onclick="selectModel('gpt')">ChatGPT</button>
-        <button class="msw" id="msw-claude" onclick="selectModel('claude')">Claude</button>
+        <button class="msw active" id="msw-gpt"    onclick="selectModel('gpt')">ChatGPT</button>
+        <button class="msw"        id="msw-claude" onclick="selectModel('claude')">Claude</button>
       </div>
-      <div class="current-model-name" id="current-model-name">gpt-4o</div>
+      <div class="current-model-name" id="current-model-name">chatgpt-4o-latest</div>
     </div>
     <button class="icon-btn" onclick="newChat()" title="Новый чат">✏️</button>
   </header>
 
-  <!-- MESSAGES -->
-  <div class="messages" id="messages">
-    <div class="welcome" id="welcome-screen">
-      <div class="welcome-hex">⬡</div>
-      <h2>AI Chat Hub</h2>
-      <p>Выберите модель вверху и начните диалог.<br>
-        Нет ключей? <button class="link-btn" onclick="openSettings()">Откройте Настройки</button></p>
-    </div>
-  </div>
+  <div class="messages" id="messages"></div>
 
-  <!-- INPUT -->
   <div class="input-area">
     <div class="input-box">
       <textarea
         id="user-input"
-        placeholder="Напишите сообщение... (Enter — отправить, Shift+Enter — новая строка)"
+        placeholder="Напишите сообщение..."
         rows="1"
         onkeydown="handleKey(event)"
         oninput="autoResize(this)"
       ></textarea>
       <button class="send-btn" id="send-btn" onclick="sendMessage()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <line x1="22" y1="2" x2="11" y2="13"/>
           <polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
